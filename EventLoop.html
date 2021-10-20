@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>加分題1</title>
+</head>
+<script>
+function fetchData(){
+    const AUTHORIZATION_KEY = 'CWB-0B5EC65C-E060-4E55-96B4-CBD8E27F46E1';
+    const LOCATION_NAME_FORECAST='臺北市';
+    const url=`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=${AUTHORIZATION_KEY}&locationName=${LOCATION_NAME_FORECAST}`;
+    fetch(url)
+    .then((response)=>response.json()).then((data)=>{
+        const locationData=data.records.location[0];
+        const weatherElements=locationData.weatherElement.reduce(
+          (neededElements,item)=>{
+            if(['Wx','Pop','CI'].includes(item.elementName)){
+              neededElements[item.elementName]=item.time[0].parameter;
+            }
+            return neededElements;
+          },{}
+        );
+        console.log(weatherElements)
+        var str1="台北現在天氣:";
+        document.getElementById('city').innerHTML=str1;
+
+        var str2=weatherElements.CI.parameterName;
+        document.getElementById('CI').innerHTML=str2;
+
+        var str3=weatherElements.Wx.parameterName;
+        document.getElementById('Wx').innerHTML=str3;
+
+    });
+}
+function hellow(){
+  var h="點擊按鈕得到台北天氣資訊";
+  document.getElementById('hellow').innerHTML=h;
+}
+function debounce(func, delay){
+  let timeout = null;
+  return function(){
+    let context = this;  
+    let args = arguments;  
+    clearTimeout(timeout)
+
+    timeout = setTimeout(function(){
+      func.apply(context, args)
+    }, delay)
+  }
+}
+//Event Loop 將 AJAX 非同步請求的callback func 放進 Callback Queue，
+//等到 call stack 的函式執行完後便把佇列中的內容拉進堆疊中執行。
+//結合 Debounce 讓使用者連續點擊間隔小於3秒的話就當成一次請求
+window.onload=function(){
+    hellow()
+    let myDebounce = document.getElementById('debounce-button');
+    myDebounce.addEventListener('click', debounce(function(e){
+        fetchData();
+    }, 3000))
+}
+</script>
+<body>
+    <p id="hellow"></p>
+    <button id="debounce-button">Click</button>
+    <p id="city"></p>
+    <p id="CI"></p>
+    <p id="Wx"></p>
+</body>
+</html>
