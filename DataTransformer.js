@@ -12,32 +12,28 @@ const orderData = {
   'T03': { name: 'C', price: 699 },
   'T04': { name: 'D', price: 799 },
 }
-var order=[];
-for(var i=0;i<userOrders.length;i++){
-  if(userIds.includes(userOrders[i].userId)){
-    var item={
-      ...userOrders[i],
-      name:userData[userOrders[i].userId]
+const w=Object.entries(orderData);
+var result=[]
+userOrders.forEach((item)=>{
+  var orders=[];
+  if(item.orderIds.length>0){
+    item.orderIds.forEach((product_id)=>{
+    var n=w.find((element)=>element[0]==product_id)
+    var cart={
+      id:product_id,
+      name:n[1].name,
+      price:n[1].price,
     }
-    order.push(item)
+    orders.push(cart)
+    })
   }
-}
-var result=[];
-for(var i=0;i<order.length;i++){
-  var buy=[];
-  if(order[i].orderIds.length>0){
-    for(var j=0;j<order[i].orderIds.length;j++){
-      var o={id:order[i].orderIds[j],
-             name:orderData[order[i].orderIds[j]].name,
-             price:orderData[order[i].orderIds[j]].price,
-            }
-      buy.push(o);
-    }
+  var detail={
+    user:{
+      id:item.userId,
+      name:userData[item.userId]
+    },
+    orders:orders,
   }
-  var r={
-    user:{id:order[i].userId,name:order[i].name},
-    orders:buy
-  }
-  result.push(r);
-}
+  result.push(detail)
+})
 console.log(result)
